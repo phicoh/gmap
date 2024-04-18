@@ -1,0 +1,27 @@
+style-file:	 	/home/philip/gmap/styles
+style:		 	STYLE
+description:		MAPDESCR (COUNTRY_CODE)
+product-id:		100
+product-version:	2
+family-name:		mkgmap FAMDESCR COUNTRY_NAME
+family-id:		FAMILY_ID
+remove-short-arcs:	1
+
+generate-sea: land-tag=natural=background
+bounds: bounds
+location-autofill: nearest
+housenumbers
+latin1
+code-page: 1252
+show-profiles: 1
+merge-lines
+add-pois-to-areas
+add-pois-to-lines
+link-pois-to-ways
+min-size-polygon: 4
+preserve-element-order
+keep-going
+net
+route
+index
+#dem: hgt/VIEW1,hgt/VIEW3,hgt/SRTM3v3.0
