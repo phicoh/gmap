@@ -1,0 +1,36 @@
+#!/bin/sh
+
+if [ $# -ne 3 ]
+then
+	echo 'do_contours_generic <map> <country> <input>' >&1
+	exit 1
+fi
+map="$1"
+country="$2"
+input="$3"
+
+OSMOSIS=osmosis/bin/osmosis
+
+# Extract the bounding box
+$OSMOSIS --read-pbf "$input" --nk keyList='does-not-exist' --write-xml bounding-box.osm.xml
+
+bounds=$(grep '<bounds' bounding-box.osm.xml |
+	sed 's/.*minlon="//;s/" minlat="/:/;s/" maxlon="/:/;s/" maxlat="/:/;s/" origin.*//')
+
+echo $bounds
+
+rm -f contour-map_lon*.osm
+.  /home/philip/venv-pyhgtmap/bin/activate
+#pyhgtmap --step=10 --hgtdir=hgt --source=view1,view3,srtm3 --simplifyContoursEpsilon=0.00001 --max-nodes-per-tile=0 --start-node-id=10000000000 --output-prefix=contour-map --srtm-version=3 -a $bounds
+#pyhgtmap --step=10 --hgtdir=hgt --source=view1,view3 --simplifyContoursEpsilon=0.00001 --max-nodes-per-tile=0 --start-node-id=10000000000 --output-prefix=contour-map --srtm-version=3 -a $bounds
+pyhgtmap --step=10 --hgtdir=hgt --source=sonn1,sonn3,view1,view3 --simplifyContoursEpsilon=0.00001 --max-nodes-per-tile=0 --start-node-id=10000000000 --output-prefix=contour-map --srtm-version=3 -a $bounds
+
+mv contour-map_lon*.osm contour-map.osm
+
+# Combine the two maps
+$OSMOSIS --read-pbf "$input" --read-xml file="contour-map.osm" enableDateParsing=no --merge --write-pbf combined.osm.pbf
+
+bin/update_hgt
+
+bin/do_split_generic "$map" "$country" combined.osm.pbf
+bin/do_mkgmap_generic "$map" "$country"

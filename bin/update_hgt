@@ -1,0 +1,22 @@
+#!/bin/sh
+# Update hgt files
+
+do_dir()
+{
+	src_dir="$1"
+	dst_dir="$2"
+
+	for f in $(cd "$src_dir" && ls -1)
+	do
+		bn=$(basename "$f" .tif)
+		out="$dst_dir/$bn".hgt
+		if [ -f "$out" ]
+		then
+			continue
+		fi
+		in="$src_dir/$f"
+		gdal_translate -of SRTMHGT "$in" "$out"
+	done
+}
+
+do_dir $HOME/gmap/hgt/SRTM3v3.0 $HOME/gmap/hgt/SRTM3v3.0_dot_hgt

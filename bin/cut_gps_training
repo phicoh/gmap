@@ -1,0 +1,7 @@
+#!/bin/sh
+
+input="$1"
+
+OSMOSIS=osmosis/bin/osmosis
+
+$OSMOSIS --read-pbf "$input" --bounding-box top=55.4095 left=-2.3250 bottom=55.1498 right=-1.7537 --write-pbf gps_training.pbf

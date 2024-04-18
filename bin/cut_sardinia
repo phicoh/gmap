@@ -1,0 +1,7 @@
+#!/bin/sh
+
+input="$1"
+
+OSMOSIS=osmosis/bin/osmosis
+
+$OSMOSIS --read-pbf "$input" --bounding-box top=42 left=7 bottom=38 right=10 --write-pbf sardinia.pbf

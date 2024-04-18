@@ -1,0 +1,33 @@
+#!/bin/sh
+
+if [ $# -ne 2 ]
+then
+	echo 'Usage: do_contours <mode> <input pbf>' >&2
+	exit 1
+fi
+
+mode="$1"
+input="$2"
+
+OSMOSIS=osmosis/bin/osmosis
+
+# Extract the bounding box
+$OSMOSIS --read-pbf "$input" --nk keyList='does-not-exist' --write-xml bounding-box.osm.xml
+
+bounds=$(grep '<bounds' bounding-box.osm.xml |
+	sed 's/.*minlon="//;s/" minlat="/:/;s/" maxlon="/:/;s/" maxlat="/:/;s/" origin.*//')
+
+echo $bounds
+
+rm -f contour-map_lon*.osm
+.  /home/philip/venv-phyghtmap-2.10/bin/activate
+set -x
+phyghtmap --max-nodes-per-tile=0 --start-node-id=10000000000 --output-prefix=contour-map -a $bounds
+exit
+mv contour-map_lon*.osm contour-map.osm
+
+# Combine the two maps
+$OSMOSIS --read-pbf "$input" --read-xml file="contour-map.osm" enableDateParsing=no --merge --write-pbf combined.osm.pbf
+
+bin/do_split_$mode combined.osm.pbf
+bin/do_mkgmap_$mode

@@ -1,0 +1,4 @@
+#!/bin/sh
+input="$1"
+
+bin/do_contours_generic fi "$input"

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+input="$1"
+
+OSMOSIS=osmosis/bin/osmosis
+
+$OSMOSIS --read-pbf "$input" --bounding-box top=47.4 left=11.6 bottom=47.0 right=12.3 --write-pbf zillertalarena.pbf

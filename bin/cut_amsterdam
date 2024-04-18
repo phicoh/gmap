@@ -1,0 +1,7 @@
+#!/bin/sh
+
+input="$1"
+
+OSMOSIS=osmosis/bin/osmosis
+
+$OSMOSIS --read-pbf "$input" --bounding-box top=52.52 left=4.7 bottom=52.2 right=5.1 --write-pbf amsterdam.pbf

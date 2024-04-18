@@ -1,0 +1,164 @@
+#!/bin/sh
+if [ "$#" -ne 2 ]
+then 
+	echo "do_mkgmap_generic <map-type> <cc>" >&2
+	exit 1
+fi
+maptype="$1"
+cc="$2"
+
+typ=''
+case "$maptype" in
+default)
+	mapcode=62
+	STYLE=default
+	MAPDESCR=Default
+	FAMDESCR=default
+;;
+car)
+	mapcode=63
+	STYLE=car
+	MAPDESCR=Car
+	FAMDESCR=car
+	typ=styles/car_style.txt
+;;
+bike)
+	mapcode=64
+	STYLE=bike
+	MAPDESCR=Bike
+	FAMDESCR=bike
+;;
+hiking)
+	mapcode=65
+	STYLE=hiking
+	MAPDESCR=Hiking
+	FAMDESCR=hiking
+;;
+skating)
+	mapcode=66
+	STYLE=skating
+	MAPDESCR=Skating
+	FAMDESCR=skating
+	typ=styles/skating_style.txt
+;;
+skiing)
+	mapcode=67
+	STYLE=skiing
+	MAPDESCR=Skiing
+	FAMDESCR=skiing
+	typ=styles/skiing_style.txt
+;;
+fns)
+	mapcode=68
+	STYLE=fns
+	MAPDESCR=FNS
+	FAMDESCR=fns
+	typ=styles/skating_style.txt
+;;
+*)
+	echo "do_mkgmap_generic: unknown map '$maptype'" >&2
+	exit 1
+;;
+esac
+
+case "$cc" in
+at)
+	COUNTRY_CODE=AT
+	COUNTRY_NAME=austria
+	FAMILY_ID=${mapcode}43
+;;
+ba)
+	COUNTRY_CODE=BA
+	COUNTRY_NAME="bosnia and herzegovina"
+	FAMILY_ID=${mapcode}387
+;;
+be)
+	COUNTRY_CODE=BE
+	COUNTRY_NAME=belgium
+	FAMILY_ID=${mapcode}32
+;;
+ch)
+	COUNTRY_CODE=CH
+	COUNTRY_NAME=swiss
+	FAMILY_ID=${mapcode}41
+;;
+cz)
+	COUNTRY_CODE=CZ
+	COUNTRY_NAME=czech
+	FAMILY_ID=${mapcode}420
+;;
+de)
+	COUNTRY_CODE=DE
+	COUNTRY_NAME=germany
+	FAMILY_ID=${mapcode}49
+;;
+dk)
+	COUNTRY_CODE=DK
+	COUNTRY_NAME=denmark
+	FAMILY_ID=${mapcode}45
+;;
+es)
+	COUNTRY_CODE=ES
+	COUNTRY_NAME=spain
+	FAMILY_ID=${mapcode}34
+;;
+fi)
+	COUNTRY_CODE=FI
+	COUNTRY_NAME=finland
+	FAMILY_ID=${mapcode}358
+;;
+fr)
+	COUNTRY_CODE=FR
+	COUNTRY_NAME=france
+	FAMILY_ID=${mapcode}33
+;;
+gb)
+	COUNTRY_CODE=GB
+	COUNTRY_NAME=great-brittain
+	FAMILY_ID=${mapcode}44
+;;
+gcc)
+	COUNTRY_CODE=GCC
+	COUNTRY_NAME="gulf cooperation council"
+	FAMILY_ID=${mapcode}971
+;;
+hu)
+	COUNTRY_CODE=HU
+	COUNTRY_NAME=hungary
+	FAMILY_ID=${mapcode}36
+;;
+it)
+	COUNTRY_CODE=IT
+	COUNTRY_NAME=italy
+	FAMILY_ID=${mapcode}39
+;;
+lu)
+	COUNTRY_CODE=LU
+	COUNTRY_NAME=luxembourg
+	FAMILY_ID=${mapcode}352
+;;
+nl)
+	COUNTRY_CODE=NL
+	COUNTRY_NAME=netherlands
+	FAMILY_ID=${mapcode}31
+;;
+no)
+	COUNTRY_CODE=NO
+	COUNTRY_NAME=norway
+	FAMILY_ID=${mapcode}47
+;;
+tr)
+	COUNTRY_CODE=TR
+	COUNTRY_NAME=turkey
+	FAMILY_ID=${mapcode}90
+;;
+*)
+	echo "unknown country '$cc'" >&2
+	exit 1
+;;
+esac
+
+sed < generic_template.args > map.args "s/STYLE/$STYLE/g; s/MAPDESCR/$MAPDESCR/g; s/COUNTRY_CODE/$COUNTRY_CODE/g; s/FAMDESCR/$FAMDESCR/g; s/COUNTRY_NAME/$COUNTRY_NAME/g; s/FAMILY_ID/$FAMILY_ID/g"
+rm -f gmapsupp.img
+mkgmap --generate-sea=multipolygon --make-opposite-cycleways --route --add-pois-to-areas --bounds=bounds --index --gmapsupp --verbose -c map.args $typ -c template.args
+mv gmapsupp.img ${maptype}_"$cc".img

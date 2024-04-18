@@ -1,0 +1,8 @@
+#!/bin/sh
+in1="$1"
+in2="$2"
+out="$3"
+
+OSMOSIS=osmosis/bin/osmosis
+
+$OSMOSIS --read-pbf "$in1" --read-pbf "$in2" --merge --write-pbf "$out"

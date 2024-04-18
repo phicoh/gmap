@@ -1,0 +1,104 @@
+#!/bin/sh
+if [ $# -ne 3 ]
+then
+	echo 'do_split_generic <map-type> <country> <file>' >&2
+	exit 1
+fi
+maptype="$1"
+country="$2"
+file="$3"
+
+case "$maptype" in
+default)
+	mapcode=62
+;;
+car)
+	mapcode=63
+;;
+bike)
+	mapcode=64
+;;
+hiking)
+	mapcode=65
+;;
+skating)
+	mapcode=66
+;;
+skiing)
+	mapcode=67
+;;
+fns)
+	mapcode=68
+;;
+*)
+	echo "do_split_generic: unknown map '$maptype'" >&2
+	exit 1
+;;
+esac
+
+case "$country" in
+at)
+	country_code=43
+;;
+ba)
+	country_code=387
+;;
+be)
+	country_code=32
+;;
+carib)
+	country_code=599
+;;
+ch)
+	country_code=41
+;;
+cz)
+	country_code=420
+;;
+de)
+	country_code=49
+;;
+dk)
+	country_code=45
+;;
+es)
+	country_code=34
+;;
+fi)
+	country_code=358
+;;
+fr)
+	country_code=33
+;;
+gb)
+	country_code=44
+;;
+gcc)
+	country_code=971
+;;
+hu)
+	country_code=36
+;;
+it)
+	country_code=39
+;;
+lu)
+	country_code=352
+;;
+nl)
+	country_code=31
+;;
+no)
+	country_code=47
+;;
+tr)
+	country_code=90
+;;
+*)
+	echo "do_split_generic: unknown country '$country'" >&2
+	exit 1
+;;
+esac
+
+id=$(expr "$mapcode$country_code"0000 : "\(.......\).*")"1"
+gmap-splitter --mapid="$id" "$file"
